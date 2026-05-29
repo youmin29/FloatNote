@@ -82,9 +82,9 @@ npm run build
 빌드가 완료되면 아래 경로에 결과물이 생성됩니다.
 
 ```
-dist/
-├── mac-arm64/FloatNote.app       ← 바로 실행 가능
-└── FloatNote-0.1.0-arm64.dmg    ← 설치 패키지
+release/0.1.1/
+├── mac-arm64/FloatNote.app         ← 바로 실행 가능
+└── FloatNote-0.1.1-arm64.dmg      ← 설치 패키지
 ```
 
 ### 아이콘 수정
