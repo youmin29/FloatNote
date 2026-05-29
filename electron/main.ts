@@ -24,36 +24,43 @@ let db: any
 let win: BrowserWindow | null
 
 function initDB() {
-  const Database = require('better-sqlite3')
-  const dbPath = path.join(app.getPath('userData'), 'floatnote.db')
-  db = new Database(dbPath)
+  try {
+    const Database = require('better-sqlite3')
+    const dbPath = path.join(app.getPath('userData'), 'floatnote.db')
+    console.log('[FloatNote] DB 경로:', dbPath)
+    db = new Database(dbPath)
+    console.log('[FloatNote] DB 연결 성공')
 
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS notes (
-      id TEXT PRIMARY KEY,
-      title TEXT DEFAULT '',
-      content TEXT DEFAULT '',
-      color TEXT DEFAULT 'yellow',
-      category TEXT DEFAULT 'personal',
-      mode TEXT DEFAULT 'text',
-      x REAL DEFAULT 100,
-      y REAL DEFAULT 100,
-      width REAL DEFAULT 280,
-      height REAL DEFAULT 320,
-      pinned INTEGER DEFAULT 0,
-      archived INTEGER DEFAULT 0,
-      created_at TEXT DEFAULT (datetime('now')),
-      updated_at TEXT DEFAULT (datetime('now'))
-    );
-    CREATE TABLE IF NOT EXISTS checklist_items (
-      id TEXT PRIMARY KEY,
-      note_id TEXT NOT NULL,
-      text TEXT DEFAULT '',
-      checked INTEGER DEFAULT 0,
-      order_idx INTEGER DEFAULT 0,
-      FOREIGN KEY(note_id) REFERENCES notes(id) ON DELETE CASCADE
-    );
-  `)
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS notes (
+        id TEXT PRIMARY KEY,
+        title TEXT DEFAULT '',
+        content TEXT DEFAULT '',
+        color TEXT DEFAULT 'yellow',
+        category TEXT DEFAULT 'personal',
+        mode TEXT DEFAULT 'text',
+        x REAL DEFAULT 100,
+        y REAL DEFAULT 100,
+        width REAL DEFAULT 280,
+        height REAL DEFAULT 320,
+        pinned INTEGER DEFAULT 0,
+        archived INTEGER DEFAULT 0,
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+      );
+      CREATE TABLE IF NOT EXISTS checklist_items (
+        id TEXT PRIMARY KEY,
+        note_id TEXT NOT NULL,
+        text TEXT DEFAULT '',
+        checked INTEGER DEFAULT 0,
+        order_idx INTEGER DEFAULT 0,
+        FOREIGN KEY(note_id) REFERENCES notes(id) ON DELETE CASCADE
+      );
+    `)
+    console.log('[FloatNote] 테이블 준비 완료')
+  } catch (e) {
+    console.error('[FloatNote] DB 초기화 실패:', e)
+  }
 }
 
 function createWindow() {
@@ -67,7 +74,7 @@ function createWindow() {
     backgroundColor: '#00000000',
     icon: path.join(process.env.VITE_PUBLIC!, 'icon.png'),
     webPreferences: {
-      preload: path.join(MAIN_DIST, 'preload.js'),
+      preload: path.join(MAIN_DIST, 'preload.mjs'),
       contextIsolation: true,
       nodeIntegration: false,
     },
@@ -111,19 +118,21 @@ ipcMain.handle('notes:getAll', () => {
 })
 
 ipcMain.handle('notes:create', (_e, note) => {
+  const { id, title, content, color, category, mode, x, y, width, height, pinned } = note
   db.prepare(`
     INSERT INTO notes (id, title, content, color, category, mode, x, y, width, height, pinned)
     VALUES (@id, @title, @content, @color, @category, @mode, @x, @y, @width, @height, @pinned)
-  `).run(note)
+  `).run({ id, title, content, color, category, mode, x, y, width, height, pinned })
   return note
 })
 
 ipcMain.handle('notes:update', (_e, note) => {
+  const { id, title, content, color, category, mode, x, y, width, height, pinned } = note
   db.prepare(`
     UPDATE notes SET title=@title, content=@content, color=@color, category=@category,
     mode=@mode, x=@x, y=@y, width=@width, height=@height, pinned=@pinned,
     updated_at=datetime('now') WHERE id=@id
-  `).run(note)
+  `).run({ id, title, content, color, category, mode, x, y, width, height, pinned })
   return note
 })
 
@@ -143,11 +152,12 @@ ipcMain.handle('checklist:getByNote', (_e, noteId) => {
 })
 
 ipcMain.handle('checklist:upsert', (_e, item) => {
+  const { id, note_id, text, checked, order_idx } = item
   db.prepare(`
     INSERT INTO checklist_items (id, note_id, text, checked, order_idx)
     VALUES (@id, @note_id, @text, @checked, @order_idx)
     ON CONFLICT(id) DO UPDATE SET text=@text, checked=@checked, order_idx=@order_idx
-  `).run(item)
+  `).run({ id, note_id, text, checked, order_idx })
   return item
 })
 

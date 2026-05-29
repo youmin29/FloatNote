@@ -82,6 +82,11 @@ export default function Toolbar() {
             </button>
           ))}
         </div>
+
+        <div className="w-px h-5 bg-gray-200" />
+
+        {/* 버전 */}
+        <span className="text-[10px] text-gray-300 select-none">v{__APP_VERSION__}</span>
       </div>
     </div>
   )
