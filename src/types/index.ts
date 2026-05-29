@@ -1,6 +1,14 @@
 export type NoteColor = 'yellow' | 'pink' | 'lavender' | 'mint' | 'blue' | 'peach'
 export type NoteCategory = 'personal' | 'work' | 'idea'
 export type NoteMode = 'text' | 'checklist' | 'ordered'
+export type BlockType = 'text' | 'check' | 'ordered'
+
+export interface Block {
+  id: string
+  type: BlockType
+  content: string
+  checked: boolean
+}
 
 export interface Note {
   id: string

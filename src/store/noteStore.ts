@@ -81,8 +81,9 @@ export const useNoteStore = create<NoteStore>((set, get) => ({
     const note = get().notes.find(n => n.id === id)
     if (!note) return
     const updated = { ...note, ...patch, updated_at: new Date().toISOString() }
-    if (window.floatAPI) await window.floatAPI.notes.update(updated)
+    // IPC 응답 전에 먼저 UI 반영 (낙관적 업데이트) → 응답 순서 꼬임으로 인한 플리커 방지
     set(s => ({ notes: s.notes.map(n => n.id === id ? updated : n) }))
+    if (window.floatAPI) window.floatAPI.notes.update(updated)
   },
 
   deleteNote: async (id) => {
