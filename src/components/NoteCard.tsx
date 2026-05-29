@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
 import { Pin, X, Copy, Archive, List, CheckSquare, AlignLeft, ChevronDown } from 'lucide-react'
-import type { Note, NoteColor, NoteMode } from '../types'
+import type { Note, NoteColor, NoteMode, NoteCategory } from '../types'
 import { useNoteStore } from '../store/noteStore'
 import ChecklistBody from './ChecklistBody'
 import OrderedBody from './OrderedBody'
@@ -20,6 +20,12 @@ const MODE_ICONS = {
   ordered: List,
 }
 
+const CATEGORY_LABELS: Record<NoteCategory, string> = {
+  personal: '개인',
+  work: '업무',
+  idea: '아이디어',
+}
+
 interface Props {
   note: Note
 }
@@ -35,6 +41,7 @@ export default function NoteCard({ note }: Props) {
 
   const [isDeleting, setIsDeleting] = useState(false)
   const [showModeMenu, setShowModeMenu] = useState(false)
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false)
   const [titleValue, setTitleValue] = useState(note.title)
 
   useEffect(() => { setTitleValue(note.title) }, [note.title])
@@ -133,10 +140,32 @@ export default function NoteCard({ note }: Props) {
           className={`flex-1 min-w-0 bg-transparent text-sm font-semibold text-gray-600 placeholder-gray-300 outline-none truncate`}
         />
 
+        {/* Category selector */}
+        <div className="relative" data-no-drag>
+          <button
+            onClick={() => { setShowCategoryMenu(v => !v); setShowModeMenu(false) }}
+            className="flex items-center gap-0.5 p-1 rounded-lg hover:bg-white/50 transition text-gray-400"
+          >
+            <span className="text-[10px] font-medium">{CATEGORY_LABELS[note.category]}</span>
+            <ChevronDown size={10} />
+          </button>
+          {showCategoryMenu && (
+            <div className="absolute left-0 top-7 z-50 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden text-xs w-24">
+              {(['personal', 'work', 'idea'] as NoteCategory[]).map(cat => (
+                <button key={cat}
+                  onClick={() => { updateNote(note.id, { category: cat }); setShowCategoryMenu(false) }}
+                  className={`w-full px-3 py-2 text-left hover:bg-gray-50 ${note.category === cat ? 'font-semibold text-gray-800' : 'text-gray-500'}`}>
+                  {CATEGORY_LABELS[cat]}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Mode switcher */}
         <div className="relative" data-no-drag>
           <button
-            onClick={() => setShowModeMenu(v => !v)}
+            onClick={() => { setShowModeMenu(v => !v); setShowCategoryMenu(false) }}
             className={`flex items-center gap-0.5 p-1 rounded-lg hover:bg-white/50 transition ${cs.accent}`}
           >
             <ModeIcon size={13} />
