@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build && electron-builder",
+    "build:ci": "tsc -b && vite build && electron-builder --publish never",
     "rebuild": "electron-rebuild -f -w better-sqlite3",
     "preview": "vite preview"
   },

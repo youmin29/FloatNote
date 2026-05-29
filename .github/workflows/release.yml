@@ -26,7 +26,7 @@ jobs:
         run: npm ci
 
       - name: 빌드
-        run: npm run build
+        run: npm run build:ci
 
       - name: DMG 업로드
         uses: actions/upload-artifact@v4
