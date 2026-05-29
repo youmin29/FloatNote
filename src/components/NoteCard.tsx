@@ -118,7 +118,7 @@ export default function NoteCard({ note }: Props) {
   return (
     <div
       ref={cardRef}
-      className={`absolute select-none rounded-2xl border ${cs.border} ${cs.bg}
+      className={`absolute select-none rounded-2xl border ${cs.border} ${cs.bg} overflow-hidden
         ${isDeleting ? 'animate-pop-out' : 'animate-pop-in'}
         ${note.pinned ? 'shadow-note-pinned' : isActive ? 'shadow-note-hover' : 'shadow-note'}
         transition-shadow duration-150`}
