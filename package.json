@@ -23,6 +23,9 @@
     "appId": "com.floatnote.app",
     "productName": "FloatNote",
     "icon": "public/icon.png",
+    "directories": {
+      "output": "release/${version}"
+    },
     "mac": {
       "category": "public.app-category.productivity",
       "icon": "public/icon.png"
