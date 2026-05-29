@@ -6,4 +6,5 @@ dist-electron/
 *.blockmap
 release/
 .DS_Store
+.claude/
 *.local
