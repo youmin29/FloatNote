@@ -2,6 +2,7 @@ import { useEffect, useCallback } from 'react'
 import { useNoteStore } from './store/noteStore'
 import NoteCard from './components/NoteCard'
 import Toolbar from './components/Toolbar'
+import Toast from './components/Toast'
 import './index.css'
 
 function App() {
@@ -72,6 +73,8 @@ function App() {
           <p className="text-gray-300 text-xs mt-1">또는 상단 툴바에서 <span className="font-semibold">새 메모</span>를 눌러보세요</p>
         </div>
       )}
+
+      <Toast />
 
       {notes.some(n => n.pinned) && (
         <div className="fixed bottom-4 right-4 text-gray-300 text-xs flex items-center gap-1 pointer-events-none">
