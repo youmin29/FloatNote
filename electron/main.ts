@@ -16,6 +16,9 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
   ? path.join(process.env.APP_ROOT, 'public')
   : RENDERER_DIST
 
+// dev/prod 모두 같은 userData 경로 사용
+app.setName('FloatNote')
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let db: any
 let win: BrowserWindow | null
