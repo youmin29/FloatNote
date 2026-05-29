@@ -4,6 +4,7 @@ import type { Note, NoteColor, NoteMode, NoteCategory } from '../types'
 import { useNoteStore } from '../store/noteStore'
 import ChecklistBody from './ChecklistBody'
 import OrderedBody from './OrderedBody'
+import ColorPicker from './ColorPicker'
 
 const COLOR_STYLES: Record<NoteColor, { bg: string; header: string; border: string; accent: string }> = {
   yellow: { bg: 'bg-pastel-yellow', header: 'bg-amber-100', border: 'border-amber-200', accent: 'text-amber-600' },
@@ -42,6 +43,7 @@ export default function NoteCard({ note }: Props) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [showModeMenu, setShowModeMenu] = useState(false)
   const [showCategoryMenu, setShowCategoryMenu] = useState(false)
+  const [showColorPicker, setShowColorPicker] = useState(false)
   const [titleValue, setTitleValue] = useState(note.title)
 
   useEffect(() => { setTitleValue(note.title) }, [note.title])
@@ -121,6 +123,25 @@ export default function NoteCard({ note }: Props) {
     >
       {/* Header */}
       <div className={`flex items-center gap-1.5 px-3 py-2 rounded-t-2xl ${cs.header} border-b ${cs.border} cursor-grab active:cursor-grabbing`}>
+        {/* Color picker trigger */}
+        <div className="relative" data-no-drag>
+          <button
+            onClick={() => { setShowColorPicker(v => !v); setShowModeMenu(false); setShowCategoryMenu(false) }}
+            className={`w-4 h-4 rounded-full transition-all hover:scale-110 ${COLOR_STYLES[note.color].border} border-2`}
+            style={{ background: {
+              yellow: '#FFF8C8', pink: '#FFD6E0', lavender: '#E8D5F5',
+              mint: '#C8F0E8', blue: '#C8E4F8', peach: '#FFE5CC'
+            }[note.color] }}
+          />
+          {showColorPicker && (
+            <ColorPicker
+              noteId={note.id}
+              currentColor={note.color}
+              onClose={() => setShowColorPicker(false)}
+            />
+          )}
+        </div>
+
         {/* Pin */}
         <button
           data-no-drag
@@ -143,7 +164,7 @@ export default function NoteCard({ note }: Props) {
         {/* Category selector */}
         <div className="relative" data-no-drag>
           <button
-            onClick={() => { setShowCategoryMenu(v => !v); setShowModeMenu(false) }}
+            onClick={() => { setShowCategoryMenu(v => !v); setShowModeMenu(false); setShowColorPicker(false) }}
             className="flex items-center gap-0.5 p-1 rounded-lg hover:bg-white/50 transition text-gray-400"
           >
             <span className="text-[10px] font-medium">{CATEGORY_LABELS[note.category]}</span>
@@ -165,7 +186,7 @@ export default function NoteCard({ note }: Props) {
         {/* Mode switcher */}
         <div className="relative" data-no-drag>
           <button
-            onClick={() => { setShowModeMenu(v => !v); setShowCategoryMenu(false) }}
+            onClick={() => { setShowModeMenu(v => !v); setShowCategoryMenu(false); setShowColorPicker(false) }}
             className={`flex items-center gap-0.5 p-1 rounded-lg hover:bg-white/50 transition ${cs.accent}`}
           >
             <ModeIcon size={13} />
